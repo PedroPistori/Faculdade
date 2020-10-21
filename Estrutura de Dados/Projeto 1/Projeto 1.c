@@ -76,7 +76,7 @@ int main(int argc, char const *argv[])
 void pausar(){ //FUNÇÃO PARA PAUSAR O PROGRAMA
     printf("Pressione qualquer tecla para continuar..");
     getch();
-    fflush;
+    fflush(stdin);
     system("cls");
 }
 
@@ -101,7 +101,7 @@ int menu(){
     printf("OPCAO 4 - SAIR DO PROGRAMA\n\n");
     printf("ESCOLHA UMA OPCAO: ");
     scanf("%d", &op);
-    fflush;
+    fflush(stdin);
     return op;
 }
 
@@ -120,16 +120,40 @@ ItemProduto preencherItem(ItemProduto item){
     
     printf("Insira o nome do produto: ");
     scanf("%s",&item.nome);
-    fflush;
+    fflush(stdin);
     printf("Insira uma descricao do produto: ");
     scanf("%s",&item.desc);
-    fflush;
+    fflush(stdin);
     printf("Insira a Quantidade em estoque: ");
     scanf("%d",&item.qntd);
-    fflush;
+    fflush(stdin);
     printf("Qual a unidade de medida?\n");
-    op = itemUnidade();
-
+    do{
+        op = itemUnidade();
+        if (op<1 || op>4)
+        {
+            printf("Opcao nao reconhecida.. Favor tente novamente\n");
+        }
+    }while (op<1 || op>4);
+    switch (op)
+    {
+    case 1:
+        strcpy(item.unidade,"Kg"); //QUILOGRAMAS
+        break;
+    case 2:
+        strcpy(item.unidade,"LT"); //LITROS
+        break;
+    case 3:
+        strcpy(item.unidade,"Unidades"); //UNIDADES
+        break;
+    case 4:
+        strcpy(item.unidade,"Caixas"); //CAIXAS
+        break;
+    }
+    printf("Insira o preco do produto: ");
+    scanf("%f", &item.preco);
+    fflush(stdin);
+    return item;
 }
 
 int itemUnidade(){
@@ -140,12 +164,12 @@ int itemUnidade(){
     printf("OPCAO 4 - Caixas\n\n");
     printf("Insira uma opcao: ");
     scanf("%d",&op);
-    fflush;
+    fflush(stdin);
 
     return op;
 }
 
 void adicionarItem(ListaProduto *lista, ItemProduto item){
     preencherItem(item);
-
+    
 }
