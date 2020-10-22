@@ -49,6 +49,7 @@ void visualizarLista(ListaProduto *lista, char call[6]);
 void visualizarListaDetalhes(ListaProduto *lista);
 int removerProdutoID(ListaProduto *lista);
 void removerProduto(ListaProduto *lista);
+void estoqueBaixo(ListaProduto *lista);
 
 int main(int argc, char const *argv[])
 {
@@ -63,7 +64,7 @@ int main(int argc, char const *argv[])
 
     int op;
 
-    while(op != 4){
+    while(op != 5){
         switch (op = menu()){
         case 1: // ADICIONAR PRODUTO
             system("cls");
@@ -82,9 +83,14 @@ int main(int argc, char const *argv[])
             visualizarLista(listaProduto,"menu");
             pausar();
             break;
-        case 4: // FINALIZAR PROGRAMA
-            printf("Ate a proxima :D");
+        case 4: // CONSULTAR ESTOQUE
+            system("cls");
+            title("Consulta de estoque");
+            estoqueBaixo(listaProduto);
             break;
+        case 5: // FINALIZAR PROGRAMA
+            printf("Ate a proxima :D");
+            break;            
         default:
             printf("Opcao nao reconhecida, favor tente novamente..\n");
             break;
@@ -118,7 +124,8 @@ int menu(){
     printf("OPCAO 1 - ADICIONAR PRODUTO\n");
     printf("OPCAO 2 - REMOVER PRODUTO\n");
     printf("OPCAO 3 - VISUALIZAR PRODUTOS\n");
-    printf("OPCAO 4 - SAIR DO PROGRAMA\n\n");
+    printf("OPCAO 4 - CONSULTAR ESTOQUE BAIXO\n");
+    printf("OPCAO 5 - SAIR DO PROGRAMA\n\n");
     printf("ESCOLHA UMA OPCAO: ");
     scanf("%d", &op);
     fflush(stdin);
@@ -192,15 +199,14 @@ void adicionarItem(ListaProduto *lista, ItemProduto item){
     ElementoProduto *elemento = (ElementoProduto*) malloc(sizeof(ElementoProduto));
     item = preencherItem(item);
     elemento->itemProduto = item;
-    
-    elemento->proximo = NULL;
+    elemento->proximo = NULL; //NULL POIS É O ULTIMO ELEMENTO DA LISTA
     if (lista->tamanho == 0)
     {
-        elemento->anterior = NULL;
-        lista->inicio = elemento;
+        elemento->anterior = NULL; //NULL POIS É O PRIMEIRO ELEMENTO DA LISTA
+        lista->inicio = elemento; //PRIMEIRO ELEMENTO DA LISTA, LOGO INICIO DA LISTA
     }else
     {
-        elemento->anterior = lista->final;
+        elemento->anterior = lista->final; //O ELEMENTO RECEM CRIADO, TEM COMO O SEU ANTERIOR, O ANTIGO FINAL DA LISTA
         lista->final->proximo = elemento; // O ELEMENTO QUE SE ENCONTRAVA NO FINAL, VAI APONTAR PARA O ELEMENTO RECEM CRIADO(PROXIMO). 
     }
     lista->final = elemento; //O FINAL VAI APONTAR PARA O ELEMENTO RECEM CRIADO, QUE SE ENCONTRA NO FINAL DA LISTA.
@@ -341,19 +347,23 @@ void removerProduto(ListaProduto *lista){
     if (listaVazia(lista) == true)
     {
         printf("A Lista se encontra VAZIA...\n");
+        pausar();
         return;
     }
-
-    int idRemover = removerProdutoID(lista);
-
+    int idRemover = 0;
+    idRemover = removerProdutoID(lista);
     ElementoProduto *apontador = lista->inicio;
     ElementoProduto *apontadorAux = apontador;
-
+  
     while ((apontador != NULL))
     {
         if (apontador->itemProduto.id == idRemover)
         {
-            if(apontador->proximo == NULL){ //ULTIMO ELEMENTO
+            if(apontador->proximo == NULL && apontador->anterior == NULL){
+                lista->inicio = NULL;
+                lista->final = NULL;
+                free(apontador);
+            }else if(apontador->proximo == NULL){ //ULTIMO ELEMENTO
                 // CONFIGURAR PARA O ULTIMO ELEMENTO, APONTAR PARA O NULL COMO PRÓXIMO
                 apontadorAux = apontador->anterior;
                 apontadorAux->proximo = NULL;
@@ -374,13 +384,46 @@ void removerProduto(ListaProduto *lista){
                 apontadorAux->anterior = apontador->anterior;
                 free(apontador);                             
             }
+            printf("\nProduto removido!\n");
             lista->tamanho--;
+            pausar();
             return;
         }
-        
         apontador = apontador->proximo;
     }
     printf("Produto nao encontrado..!\n");
-    getch();
+    pausar();
+}
+
+void estoqueBaixo(ListaProduto *lista){
+    if (listaVazia(lista) == true)
+    {
+        printf("A Lista se encontra VAZIA!\n");
+        return;
+    }
+    ElementoProduto *apontador = lista->inicio;
+    int count = 0;
+    int qntdBaixo = 0;
+    
+    while(qntdBaixo <=0){
+        printf("Deseja pesquisar produtos abaixo de quantas quantidades em Estoque? (INSIRA UM VALOR MAIOR QUE 0!)\n");
+        printf("Exibir produtos abaixo de: ");
+        scanf("%d", &qntdBaixo);
+        fflush(stdin);
+    }
+
+    while (apontador != NULL)
+    {
+        if((apontador->itemProduto.qntd > 0) && (apontador->itemProduto.qntd <= qntdBaixo) && (count <10)) {
+            printf("ID: %d\n", apontador->itemProduto.id);
+            printf("NOME: %s\n", apontador->itemProduto.nome);
+            printf("QUANTIDADE: %d %s\n", apontador->itemProduto.qntd, apontador->itemProduto.unidade);
+            printf("-------------------\n");
+            count++;
+        }
+        apontador = apontador->proximo;
+    }  
+    printf("\nForam encontrados %d produto(s) com o estoque baixo!\n", count);
+    pausar();
 }
 
