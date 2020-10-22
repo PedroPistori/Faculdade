@@ -45,8 +45,10 @@ ItemProduto preencherItem(ItemProduto item);
 int itemUnidade();
 void adicionarItem(ListaProduto *lista, ItemProduto item);
 bool listaVazia(ListaProduto *lista);
-void visualizarLista(ListaProduto *lista);
+void visualizarLista(ListaProduto *lista, char call[6]);
 void visualizarListaDetalhes(ListaProduto *lista);
+int removerProdutoID(ListaProduto *lista);
+void removerProduto(ListaProduto *lista);
 
 int main(int argc, char const *argv[])
 {
@@ -56,7 +58,7 @@ int main(int argc, char const *argv[])
     strcpy(itemProduto.nome,"");
     strcpy(itemProduto.desc,"");
     itemProduto.qntd = 0;
-    itemProduto.preco = 0,0;
+    itemProduto.preco = 0.0;
     strcpy(itemProduto.unidade,"");
 
     int op;
@@ -71,12 +73,13 @@ int main(int argc, char const *argv[])
             break;
         case 2: // REMOVER PRODUTO
             system("cls");
-            title("Remover Produto");            
+            title("Remover Produto");  
+            removerProduto(listaProduto);          
             break;
         case 3: // VISUALIZAR PRODUTOS
             system("cls");
             title("Visualizar Produto");
-            visualizarLista(listaProduto);
+            visualizarLista(listaProduto,"menu");
             pausar();
             break;
         case 4: // FINALIZAR PROGRAMA
@@ -193,9 +196,11 @@ void adicionarItem(ListaProduto *lista, ItemProduto item){
     elemento->proximo = NULL;
     if (lista->tamanho == 0)
     {
+        elemento->anterior = NULL;
         lista->inicio = elemento;
     }else
     {
+        elemento->anterior = lista->final;
         lista->final->proximo = elemento; // O ELEMENTO QUE SE ENCONTRAVA NO FINAL, VAI APONTAR PARA O ELEMENTO RECEM CRIADO(PROXIMO). 
     }
     lista->final = elemento; //O FINAL VAI APONTAR PARA O ELEMENTO RECEM CRIADO, QUE SE ENCONTRA NO FINAL DA LISTA.
@@ -212,12 +217,12 @@ bool listaVazia(ListaProduto *lista){
     
 }
 
-void visualizarLista(ListaProduto *lista){
+void visualizarLista(ListaProduto *lista, char call[6]){
     if(listaVazia(lista)){
         printf("A Lista se encontra vazia!\n\n");
         return;
     }
-    int op;
+    int op = 0;
     ElementoProduto *apontador = lista->inicio;
     while (apontador != NULL)
     {   
@@ -228,14 +233,45 @@ void visualizarLista(ListaProduto *lista){
         apontador = apontador->proximo;
     }
 
-    printf("\nDeseja ver algum item Detalhadamente? (1 - SIM | 2 - NAO)\n");
-    printf("Escolha uma opcao: ");
-    scanf("%d",&op);
-    fflush(stdin);
-    if (op == 1){
-        visualizarListaDetalhes(lista);
+    if(strcmp(call,"menu") == 0){
+        while (op < 1 || op > 2){
+            op = opcaoSimNao(1);
+            switch (op)
+            {
+                case 1:
+                    visualizarListaDetalhes(lista);
+                    break;
+                case 2:
+                    break;           
+                default:
+                    printf("Opcao nao reconhecida, favor tente novamente..\n");
+                    break;
+            }
+        }
     }
+    
     printf("\n");
+}
+
+int opcaoSimNao(int call){
+    // CALL == 1 -> VISUALIZAR LISTA DETALHADA
+    // CALL == 2 -> VISUALIZAR LISTA
+
+    int op = 0;
+    
+    if (call == 1){
+        printf("\nDeseja ver algum item Detalhadamente? (1 - SIM | 2 - NAO)\n");
+    }else if (call == 2)
+    {
+        printf("Deseja ver a lista de produtos? (1 - SIM | 2 - NAO)\n");
+    }
+    
+
+    printf("Escolha uma opcao: ");
+    scanf("%d", &op);
+    fflush(stdin);
+
+    return op;
 }
 
 void visualizarListaDetalhes(ListaProduto *lista){
@@ -273,3 +309,78 @@ void visualizarListaDetalhes(ListaProduto *lista){
         printf("NAO FOI ENCONTRADO NENHUM ITEM COM O CODIGO: %d!\n\n", idPesquisa);
     }
 }
+
+int removerProdutoID(ListaProduto *lista){
+        int op = 0;
+        int idRemover = 0;
+
+        while (op < 1 || op > 2){
+            op = opcaoSimNao(2);
+            switch (op)
+            {
+            case 1:
+                visualizarLista(lista,"remover");
+                break;
+            case 2:
+                break;           
+            default:
+                printf("Opcao nao reconhecida, favor tente novamente..\n");
+                break;
+            }
+        }
+        
+        printf("Insira o ID do produto que deseja remover: ");
+        scanf("%d", &idRemover);
+        fflush(stdin);
+
+        return idRemover;
+}
+
+void removerProduto(ListaProduto *lista){
+
+    if (listaVazia(lista) == true)
+    {
+        printf("A Lista se encontra VAZIA...\n");
+        return;
+    }
+
+    int idRemover = removerProdutoID(lista);
+
+    ElementoProduto *apontador = lista->inicio;
+    ElementoProduto *apontadorAux = apontador;
+
+    while ((apontador != NULL))
+    {
+        if (apontador->itemProduto.id == idRemover)
+        {
+            if(apontador->proximo == NULL){ //ULTIMO ELEMENTO
+                // CONFIGURAR PARA O ULTIMO ELEMENTO, APONTAR PARA O NULL COMO PRÓXIMO
+                apontadorAux = apontador->anterior;
+                apontadorAux->proximo = NULL;
+                lista->final = apontadorAux;
+                free(apontador);
+            }else if(apontador->anterior == NULL){ //PRIMEIRO ELEMENTO
+                // CONFIGURAR PARA O PRIMEIRO ELEMENTO, RECONHECER QUE NULL É O ANTERIOR A ELE
+                apontadorAux = apontador->proximo;
+                apontadorAux->anterior = NULL;
+                lista->inicio = apontadorAux;
+                free(apontador);              
+            }else{ //ELEMENTO NO MEIO
+                // CONFIGURAR PARA O APONTADOR ANTERIOR, APONTAR PARA O PRÓXIMO
+                apontadorAux = apontador->anterior;
+                apontadorAux->proximo = apontador->proximo;
+                //CONFIGURAR PARA O PRÓXIMO APONTADOR, RECONHECER O ANTERIOR
+                apontadorAux = apontador->proximo;
+                apontadorAux->anterior = apontador->anterior;
+                free(apontador);                             
+            }
+            lista->tamanho--;
+            return;
+        }
+        
+        apontador = apontador->proximo;
+    }
+    printf("Produto nao encontrado..!\n");
+    getch();
+}
+
