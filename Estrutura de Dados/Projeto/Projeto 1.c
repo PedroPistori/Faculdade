@@ -38,6 +38,7 @@ typedef struct listaProduto
     ElementoProduto *inicio,*final;
 }ListaProduto;
 
+void pausar();
 void title(char opcao[30]);
 int menu();
 ListaProduto* criarListaProduto();
