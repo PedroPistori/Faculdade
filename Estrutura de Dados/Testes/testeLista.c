@@ -2,21 +2,21 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct item
+typedef struct item //DEIFINIR O ITEM (ID, QUANDIDADE)
 {
     int id,qntd;
 } Item;
 
-typedef struct elemento
+typedef struct elemento //DEFINIR ELEMENTO
 {
-    Item item;
-    struct elemento *proximo;
+    Item item; //VARIAVEL DO TIPO ITEM, QUE VAI CONTER OS DADOS EM SI
+    struct elemento *proximo; //PONTEIRO DO TIPO ELEMENTO, APONTANDO PARA O PRÓXIMO ELEMENTO DA LISTA
 }Elemento;
 
-typedef struct lista
+typedef struct lista //DEFINIR LISTA
 {
-    int tamanho;
-    Elemento *inicio , *final;
+    int tamanho; //QUANTIDADE DE ELEMENTO QUE A LISTA TEM
+    Elemento *inicio , *final; //PONTEIRO DO TIPO ELEMENTO, APONTANDO PARA O PRIMEIRO ELEMENTO DA LISTA, E PRO ULTIMO ELEMENTO DA LISTA
 } Lista;
 
 
