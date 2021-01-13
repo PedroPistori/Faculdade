@@ -28,6 +28,8 @@ void verificarVetor(PRODUTOS *produtos); //VERIFICAR PROXIMO INDICE VAZIO
 int quantidadeEstoque(PRODUTOS *produtos); //AUXILIAR PARA FUNÇÃO DE VISUALIZAR ESTOQUE
 void addProduto(PRODUTOS *produtos); //OP 1 - ADICIONAR PRODUTOS
 void subProduto(PRODUTOS *produtos); //OP 2 - REMOVER PRODUTOS
+int menuRemoverProduto();
+void removerVisualizarEstoque(PRODUTOS *produtos);
 void visualizarEstoque(PRODUTOS *produtos); //OP 3 - VISUALIZAR ESTOQUE
 
 int main(int argc, char const *argv[]){
@@ -50,7 +52,7 @@ int main(int argc, char const *argv[]){
             addProduto(pProdutos);
             break;
         case 2: //REMOVER PRODUTO
-            /* code */
+            subProduto(pProdutos);
             break;
         case 3: //CONSULTAR ESTOQUE
             visualizarEstoque(pProdutos);
@@ -154,20 +156,6 @@ void addProduto(PRODUTOS *produtos){
     getchar();
 }
 
-int menuRemoverProduto(){
-    int op;
-    while(op < 1 || op > 2){
-        printf("Deseja visualizar os produtos?\n");
-        printf("OPCAO 1 - SIM\n");
-        printf("OPCAO 2 - NAO\n");
-        scanf("%d",op);
-        if(op < 1 && op > 2){
-            printf("Opcao nao reconhecida..\n");
-        }
-    }
-    return op;
-}
-
 void subProduto(PRODUTOS *produtos){
     
     int qntdEmEstoque = quantidadeEstoque(produtos); //QUANTIDADE DE PRODUTOS NO ESTOQUE
@@ -178,16 +166,60 @@ void subProduto(PRODUTOS *produtos){
         return; //SAIR DA FUNÇÃO
     }
 
+    int codRemover;
     system("cls");
     title();
     printf("->REMOVER PRODUTO\n");
-    char op = menuRemoverProduto();
-    if (strcmp(op,"S"))
-    {
-        /* code */
+    if (menuRemoverProduto() == 1){
+        removerVisualizarEstoque(produtos);
     }
-    
 
+    printf("Informe o codigo do produto que deseja remover: ");
+    scanf("%d", &codRemover);
+    fflush(stdin);
+    
+    for(int i = 0; i < qntdMAX; i++){
+        if(produtos[i].codProduto == codRemover){
+            produtos[i].codProduto = NULL;
+            strcpy(produtos[i].nome,"");
+            produtos[i].qntd = NULL;
+
+            printf("Produto removido com sucesso!\n");
+            printf("Pressione qualquer tecla para Continuar..");
+            getchar();
+            return;
+        }
+    }
+    printf("Codigo nao encontrado no Estoque.. Nenhuma alteracao realizada..\n");
+    printf("Pressione qualquer tecla para Continuar..");
+    getchar();
+}
+
+int menuRemoverProduto(){
+    int op = 0;
+    while(op < 1 || op > 2){
+        printf("Deseja visualizar os produtos?\n");
+        printf("OPCAO 1 - SIM\n");
+        printf("OPCAO 2 - NAO\n");
+        scanf("%d", &op);
+        fflush(stdin);
+        if(op < 1 && op > 2){
+            printf("Opcao nao reconhecida..\n");
+        }
+    }
+    return op;
+}
+
+void removerVisualizarEstoque(PRODUTOS *produtos){
+    printf("\n---------------------\n"); //SEPARADOR
+    for(int i = 0; i < qntdMAX; i++){
+        if (produtos[i].codProduto != 0){
+            printf("CODIGO: %d\n", produtos[i].codProduto);
+            printf("NOME: %s\n", produtos[i].nome);
+            printf("ESTOQUE: %d\n", produtos[i].qntd);
+            printf("---------------------\n"); //SEPARADOR
+        }
+    }
 }
 
 void visualizarEstoque(PRODUTOS *produtos){
@@ -216,3 +248,4 @@ void visualizarEstoque(PRODUTOS *produtos){
     printf("Pressione qualquer tecla para Continuar..");
     getchar();
 }
+
