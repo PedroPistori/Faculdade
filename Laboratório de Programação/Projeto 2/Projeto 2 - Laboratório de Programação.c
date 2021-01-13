@@ -145,6 +145,7 @@ void addProduto(PRODUTOS *produtos){
     printf("Informe o NOME do Produto: ");
     scanf("%s", &produtos[proxIndex].nome);
     fflush(stdin);
+    strupr(produtos[proxIndex].nome);
     //ESTOQUE
     printf("Informe o ESTOQUE do produto: ");
     scanf("%d", &produtos[proxIndex].qntd);
@@ -293,7 +294,7 @@ void ConsultarEstoquePersonalizado(PRODUTOS *produtos){
     for(int i = 0; i < qntdMAX; i++){
         if (produtos[i].codProduto > 0 && (produtos[i].qntd > qntdMin && produtos[i].qntd < qntdMax)){
             encontrou = 1;
-            if(encontrados == 0){
+            if(qntdEncontrados == 0){
                 printf("\n---------------------\n"); //SEPARADOR
             }
             printf("CODIGO: %d\n", produtos[i].codProduto);
