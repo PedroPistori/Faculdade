@@ -31,13 +31,14 @@ void subProduto(PRODUTOS *produtos); //OP 2 - REMOVER PRODUTOS
 int menuRemoverProduto();
 void removerVisualizarEstoque(PRODUTOS *produtos);
 void visualizarEstoque(PRODUTOS *produtos); //OP 3 - VISUALIZAR ESTOQUE
+void ConsultarEstoquePersonalizado(PRODUTOS *produtos);
 
 int main(int argc, char const *argv[]){
 
     //INICIALIZAR PROGRAMA!
     printf("Informe a quantidade de produtos que deseja armazenar: ");
     scanf("%d", &qntdMAX);
-    
+    fflush(stdin);
     PRODUTOS produtos[qntdMAX]; //VETOR DE REGISTROS (PRODUTOS)
     PRODUTOS *pProdutos = &produtos; //PONTEIRO PARA O VETOR
     inicializarVetor(pProdutos);
@@ -57,8 +58,8 @@ int main(int argc, char const *argv[]){
         case 3: //CONSULTAR ESTOQUE
             visualizarEstoque(pProdutos);
             break;
-        case 4: //CONSULTAR ESTOQUE BAIXO
-            /* code */
+        case 4: //CONSULTAR ESTOQUE PERSONALIZADO
+            ConsultarEstoquePersonalizado(pProdutos);
             break;
         case 5:
             printf("\nAte a proxima.. :)\n");
@@ -85,7 +86,7 @@ int menu(){
     printf("OPCAO 1 - CADASTRAR PRODUTO\n");
     printf("OPCAO 2 - REMOVER PRODUTO\n");
     printf("OPCAO 3 - CONSULTAR ESTOQUE\n");
-    printf("OPCAO 4 - CONSULTAR ESTOQUE BAIXO\n");
+    printf("OPCAO 4 - CONSULTAR ESTOQUE PERSONALIZADO\n");
     printf("OPCAO 5 - SAIR DO PROGRAMA.\n");
     printf("Escolha uma opcao: ");
     scanf("%d",&op);
@@ -190,7 +191,7 @@ void subProduto(PRODUTOS *produtos){
             return;
         }
     }
-    printf("Codigo nao encontrado no Estoque.. Nenhuma alteracao realizada..\n");
+    printf("\nCodigo nao encontrado no Estoque.. Nenhuma alteracao realizada..\n");
     printf("Pressione qualquer tecla para Continuar..");
     getchar();
 }
@@ -211,13 +212,17 @@ int menuRemoverProduto(){
 }
 
 void removerVisualizarEstoque(PRODUTOS *produtos){
-    printf("\n---------------------\n"); //SEPARADOR
+    int encontrados = 0;
     for(int i = 0; i < qntdMAX; i++){
         if (produtos[i].codProduto != 0){
+            if(encontrados == 0){
+                printf("\n---------------------\n"); //SEPARADOR
+            }
             printf("CODIGO: %d\n", produtos[i].codProduto);
             printf("NOME: %s\n", produtos[i].nome);
             printf("ESTOQUE: %d\n", produtos[i].qntd);
             printf("---------------------\n"); //SEPARADOR
+            encontrados++;
         }
     }
 }
@@ -231,17 +236,21 @@ void visualizarEstoque(PRODUTOS *produtos){
         getchar();
         return; //SAIR DA FUNÇÃO
     }
-
+    int encontrados = 0;
     system("cls");
     title();
     printf("->VISUALIZAR ESTOQUE\n");
-    printf("\n---------------------\n"); //SEPARADOR
+    
     for(int i = 0; i < qntdMAX; i++){
         if (produtos[i].codProduto != 0){
+            if(encontrados == 0){
+                printf("\n---------------------\n"); //SEPARADOR
+            }
             printf("CODIGO: %d\n", produtos[i].codProduto);
             printf("NOME: %s\n", produtos[i].nome);
             printf("ESTOQUE: %d\n", produtos[i].qntd);
             printf("---------------------\n"); //SEPARADOR
+            encontrados++;
         }
     }
     printf("\nProdutos em Estoque: %d\n", qntdEmEstoque); //INFORMAÇÃO DA QUANTIDADE DE PRODUTOS EM ESTOQUE
@@ -249,3 +258,56 @@ void visualizarEstoque(PRODUTOS *produtos){
     getchar();
 }
 
+void ConsultarEstoquePersonalizado(PRODUTOS *produtos){
+    int qntdEmEstoque = quantidadeEstoque(produtos); //QUANTIDADE DE PRODUTOS NO ESTOQUE
+    
+    if(qntdEmEstoque <= 0){ //VERIFICAR SE POSSUI PRODUTOS PARA VISUALIZAR
+        printf("\nNenhum produto cadastrado no estoque!\n");
+        printf("Pressione qualquer tecla para Continuar..");
+        getchar();
+        return; //SAIR DA FUNÇÃO
+    }
+    
+    int qntdMin, qntdMax, encontrou, qntdEncontrados;
+    encontrou = 0;
+    qntdEncontrados = 0;
+    system("cls");
+    title();
+    printf("->VISUALIZAR ESTOQUE\n");
+
+    printf("Qual a quantidade MINIMA de quantidade que deseja procurar? ");
+    scanf("%d", &qntdMin);
+    fflush(stdin);
+    printf("Qual a quantidade MAXIMA de quantidade que deseja procurar? ");
+    scanf("%d", &qntdMax);
+    fflush(stdin);
+
+    if(qntdMin>qntdMax){ //EVITAR INFORMACAO ERRADA
+        int qntdAux = qntdMax;
+        qntdMax = qntdMin;
+        qntdMin = qntdAux;
+    }
+    printf("\nQuantidade MINIMA: %d", qntdMin);
+    printf("Quantidade MAXIMA: %d\n", qntdMax);
+    
+    for(int i = 0; i < qntdMAX; i++){
+        if (produtos[i].codProduto > 0 && (produtos[i].qntd > qntdMin && produtos[i].qntd < qntdMax)){
+            encontrou = 1;
+            if(encontrados == 0){
+                printf("\n---------------------\n"); //SEPARADOR
+            }
+            printf("CODIGO: %d\n", produtos[i].codProduto);
+            printf("NOME: %s\n", produtos[i].nome);
+            printf("ESTOQUE: %d\n", produtos[i].qntd);
+            printf("---------------------\n"); //SEPARADOR
+            qntdEncontrados++;
+        }
+    }
+    if (encontrou == 0){
+        printf("Nenhum produto encontrado no estoque com essas configuracoes..");
+    }else{
+        printf("Produtos encontrados: %d", qntdEncontrados);
+    }
+        printf("\nPressione qualquer tecla para Continuar..");
+        getchar();
+}
