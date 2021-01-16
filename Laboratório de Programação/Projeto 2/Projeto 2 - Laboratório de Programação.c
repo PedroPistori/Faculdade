@@ -1,7 +1,7 @@
 /*
 Aluno: Pedro Henrique Pistori Costa
-Tema: **Mercado
-Projeto 2 - Laboratório de Programação
+Tema: Mercado
+Projeto 2 - Laboratório de Programação 13/01/2021
 */
 
 #include <stdio.h>
