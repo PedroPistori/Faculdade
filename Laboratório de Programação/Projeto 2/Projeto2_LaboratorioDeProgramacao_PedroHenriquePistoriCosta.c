@@ -13,7 +13,7 @@ int qntdMAX;
 int proxIndex;
 
 //DEFINIÇÃO DE REGISTROS
-typedef struct produtos{
+typedef struct{
     int codProduto;
     char nome[50];
     int qntd;
