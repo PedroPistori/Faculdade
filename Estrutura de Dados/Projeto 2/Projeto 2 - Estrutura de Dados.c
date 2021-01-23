@@ -127,18 +127,26 @@ NODE criarNo(){
 
 //ADICIONAR NÓ NA ARVORE
 NODE adicionar(NODE raiz, NODE no){
-    if(raiz == NULL){
-        return(no);
+    if(raiz == NULL){ //VERIFICA SE A RAIZ ATUAL EXISTE, CASO NÃO EXISTA, VAI ADICIONAR O NÓ RECEM-CRIADO NAQUELA POSIÇÃO
+        return(no); 
     }
-    if(no->codProduto < raiz->codProduto){
+    if(no->codProduto < raiz->codProduto){ //VERIFICA SE O NÓ RECEM-CRIADO, É MENOR QUE A RAIZ, OU NÓ ATUAL.
+        //CASO O NÓ RECEM-CRIADO SEJA MENOR QUE A RAIZ, OU NÓ ATUAL, CHAMA A FUNÇÃO NOVAMENTE, PASSANDO COMO PARAMETRO.
+        //O LADO ESQUERDO DA RAIZ, OU NÓ ATUAL, PARA COMPARAR NOVAMENTE.
+        //QUANDO CHEGAR EM UM ESPAÇO VAZIO, VAI ADICIONAR O NÓ NA POSIÇÃO ATUAL NO IF ACIMA.
         raiz->esq = adicionar(raiz->esq,no);
     }else{
+        //CASO O NÓ RECEM-CRIADO SEJA MENOR QUE A RAIZ, OU NÓ ATUAL, CHAMA A FUNÇÃO NOVAMENTE, PASSANDO COMO PARAMETRO.
+        //O LADO DIREITO DA RAIZ, OU NÓ ATUAL, PARA COMPARAR NOVAMENTE.
+        //QUANDO CHEGAR EM UM ESPAÇO VAZIO, VAI ADICIONAR O NÓ NA POSIÇÃO ATUAL NO IF ACIMA.
         raiz->dir = adicionar(raiz->dir,no);
     }
+    //RETORNA A RAIZ ATUALIZADA
     return(raiz);
 }
 
 int buscarIDAux(){
+    // FUNÇÃO PARA O USUARIO INFORMAR O CÓDIGO DO PRODUTO QUE DESEJA BUSCAR.
     int codBuscar;
     printf("Informe o CODIGO do produto que deseja buscar: ");
     scanf("%d", &codBuscar);
@@ -148,6 +156,7 @@ int buscarIDAux(){
 
 //BUSCAR PRODUTO NA ARVORE
 void buscarID(NODE raiz, int codBuscar){
+    //FUNÇÃO PARA BUSCAR O PRODUTO INFORMADO PELO USUARIO EM buscarIDAux() NA ARVORE
     if(raiz == NULL){
         titulo();
         printf("Nao encontrou o CODIGO %d na lista de produtos!\n\n", codBuscar);
@@ -165,6 +174,7 @@ void buscarID(NODE raiz, int codBuscar){
 
 //REMOÇÃO DE NÓ
 NODE buscaNode(NODE raiz, int chave, NODE *pai){ //METODO AUXILIAR PARA A REMOÇÃO DE NÓ
+    //FUNÇÃO UTILIZADA NA REMOÇÃO DE NÓ, UTILIZADA PARA RETORNAR A POSIÇÃO DO NÓ QUE O USUÁRIO DESEJA REMOVER.
     NODE aux = raiz;
     *pai = NULL;
     while(aux){
